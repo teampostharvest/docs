@@ -173,3 +173,39 @@ DECISIONS.md O1/O4):
    DECISIONS.md**.
 
 Host-side artifacts live in `deploy/` (see `deploy/README.md`).
+
+## Monitoring — Prometheus + Grafana (ADRs D13–D17)
+
+The observability milestone ships with the stack. Start it together with prod:
+
+```sh
+make prod-up    # base services only (no monitoring)
+make mon-up     # prod + prometheus, grafana, exporters, cadvisor
+```
+
+Everything monitoring is provisioned as code (see `DECISIONS.md` D13–D17):
+
+- **Prometheus** (`prom/prometheus`) scrapes every `/metrics` every 15s —
+  backend (`:8000`), node (`:9334`), go (`:8080`) — plus `redis_exporter`,
+  `nginx_exporter` (nginx `stub_status` on an internal-only listener),
+  `node_exporter` (host metrics) and `cadvisor` (container metrics). TSDB lives
+  in the `prometheus-data` volume; retention is `PROMETHEUS_RETENTION_DAYS`
+  (default 30d).
+- **Grafana** (OSS) serves dashboards-as-code from
+  `docker/grafana/dashboards/postharvest-overview.json` and alert rules /
+  contact points from `docker/grafana/provisioning/`.
+- **No monitoring port is published (D15).** Reach Grafana over an SSH tunnel:
+
+  ```sh
+  ssh -L 3001:127.0.0.1:3001 <vps>   # then open http://localhost:3001
+  ```
+
+  Grafana admin credentials come from `GRAFANA_ADMIN_USER` /
+  `GRAFANA_ADMIN_PASSWORD` in `docker/.env`.
+
+- **Alerts** (backend down, 5xx spike, redis down / memory pressure, host disk
+  >85%, any scrape target down) are Grafana-native rules provisioned from
+  `docker/grafana/provisioning/alerting/`. The notification channel is a
+  generic webhook whose URL is `GRAFANA_ALERT_WEBHOOK_URL` in `docker/.env`;
+  when it is empty the rules still evaluate and fire in the UI but no
+  notification is sent (D17).

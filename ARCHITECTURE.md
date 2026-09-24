@@ -189,6 +189,29 @@ plus its parity suite (`tests/test_go_worker_seam.py`) prove the flagged
 path returns byte-identical posts/stats to the flag-off path before anyone
 flips the switch.
 
+## Monitoring (Prometheus + Grafana)
+
+Observability ships as compose citizens behind the `mon` profile (ADRs D13–D17
+in `../DECISIONS.md`). Every service exposes Prometheus text-format `/metrics`:
+
+| Source | Endpoint | Exposes |
+|---|---|---|
+| backend | `backend:8000/metrics` | `postharvest_http_requests_total`, latency histogram, `postharvest_scrape_jobs_total`, `postharvest_redis_errors_total` |
+| node | `node:9334/metrics` | `postharvest_node_fetch_requests_total{outcome}` |
+| go | `go:8080/metrics` | `postharvest_go_requests_total{handler,status}`, latency histogram, runtime/process |
+| redis | `redis_exporter:9121` | `redis_memory_used_bytes`, `redis_commands_processed_total`, … |
+| nginx | `nginx_exporter` ← `nginx:18080/stub_status` | `nginx_connections_active`, `nginx_http_requests_total`, … |
+| host | `node_exporter:9100` | CPU / memory / disk / load of the VPS |
+| containers | `cadvisor:8090` | per-container CPU / memory |
+
+**Wiring**: `prometheus` joins BOTH compose networks — `web` and `isolated`
+(`internal: true`) — so one instance reaches every target; `grafana` joins
+`web` only and talks to prometheus. Neither nginx nor any compose service
+publishes a monitoring port (D15): the only nginx addition is an internal-only
+`stub_status` listener on `:18080`, allow-listed to the docker networks (D16).
+Dashboards and alert rules are provisioned from
+`docker/grafana/provisioning/` + `docker/grafana/dashboards/` as code.
+
 ## Exports
 
 `export_posts(...)` supports `json | csv | excel | jsonl` (`excel`/`xlsx`
