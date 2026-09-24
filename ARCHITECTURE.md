@@ -192,7 +192,7 @@ flips the switch.
 ## Monitoring (Prometheus + Grafana)
 
 Observability ships as compose citizens behind the `mon` profile (ADRs D13–D17
-in `../DECISIONS.md`). Every service exposes Prometheus text-format `/metrics`:
+in `DECISIONS.md`). Every service exposes Prometheus text-format `/metrics`:
 
 | Source | Endpoint | Exposes |
 |---|---|---|

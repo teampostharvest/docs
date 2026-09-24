@@ -12,7 +12,7 @@ long-form reference.
 | [CONTRIBUTING.md](./CONTRIBUTING.md) | Setup, tests, CI, branch flow, review process |
 
 Project-level decisions (product + infra, with rationale) are recorded in
-[DECISIONS.md](../DECISIONS.md); the phased roadmap lives in
+[DECISIONS.md](./DECISIONS.md); the phased roadmap lives in
 [ROADMAP.md](../ROADMAP.md); the compliance / permitted-use statement is in
 [COMPLIANCE.md](../COMPLIANCE.md).
 

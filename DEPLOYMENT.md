@@ -4,7 +4,7 @@ How to run PostHarvest with Docker (dev and production), the env-file split,
 the Makefile, and the path to a public deployment on a VPS.
 
 Everything container-related lives in `docker/` — the compose **project
-directory** (see [DECISIONS.md](../DECISIONS.md) D6–D12 for the rationale).
+directory** (see [DECISIONS.md](./DECISIONS.md) D6–D12 for the rationale).
 
 ## Env files — the two-template split
 

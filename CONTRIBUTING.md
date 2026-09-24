@@ -115,7 +115,7 @@ make dev-down
 ## Decision record
 
 Product and infra decisions (incl. the cookie-model and Docker-layout choices
-currently driving the project) are locked in [DECISIONS.md](../DECISIONS.md);
+currently driving the project) are locked in [DECISIONS.md](./DECISIONS.md);
 the phased plan is in [ROADMAP.md](../ROADMAP.md). Read both before starting
 anything that touches tenancy, auth, cookies, or the Docker topology — those
 areas are deliberately planned, not improvised. When in doubt, raise a
